@@ -227,7 +227,6 @@ async function updateEmployeeRole() {
   const data = await db.updateEmployeeRoleDB(employeeInt, roleInt);
   console.log("Updated employee's role");
   console.log("\n");
-
   loadMainPrompts();
 }
 async function addEmployee() {
