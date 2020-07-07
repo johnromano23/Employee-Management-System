@@ -1,26 +1,14 @@
 const { prompt } = require("inquirer");
 const db = require("./db");
 require("console.table");
+const logo = require("asciiart-logo");
 
 init();
 
 function init() {
-  const intro = `
-███████ ███    ███ ██████  ██       ██████  ██    ██ ███████ ███████     
-██      ████  ████ ██   ██ ██      ██    ██  ██  ██  ██      ██          
-█████   ██ ████ ██ ██████  ██      ██    ██   ████   █████   █████       
-██      ██  ██  ██ ██      ██      ██    ██    ██    ██      ██          
-███████ ██      ██ ██      ███████  ██████     ██    ███████ ███████     
-                                                                         
-                                                                         
-████████ ██████   █████   ██████ ██   ██ ███████ ██████                  
-   ██    ██   ██ ██   ██ ██      ██  ██  ██      ██   ██                 
-   ██    ██████  ███████ ██      █████   █████   ██████                  
-   ██    ██   ██ ██   ██ ██      ██  ██  ██      ██   ██                 
-   ██    ██   ██ ██   ██  ██████ ██   ██ ███████ ██   ██ 
-      
- `;
-  console.log(intro);
+  const logoText = logo({ name: "Employee Management System" }).render();
+
+  console.log(logoText);
 
   loadMainPrompts();
 }
@@ -88,64 +76,47 @@ async function loadMainPrompts() {
       return quit();
   }
 }
+
 async function viewDepartments() {
-  const departments = await db.findAllDepartments();
-  let deptArrayHolder = [];
-  for (let i = 0; i < departments.length; i++) {
-    let deptArray = [departments[i].id, departments[i].name];
-    deptArrayHolder.push(deptArray);
-  }
-  console.log("------------------------------------------------------");
-  console.log("DEPARTMENTS");
-  console.log("------------------------------------------------------");
-  console.table(["ID", "Name"], deptArrayHolder);
+  const YOUR_VARIABLE = await db.findAllDepartments();
+
   console.log("\n");
+  console.table(YOUR_VARIABLE);
 
   loadMainPrompts();
 }
 
 async function addDepartment() {
-  const deptTemplate = await prompt([
+  const YOUR_DEPT_VARIABLE = await prompt([
     {
       name: "name",
       message: "What is the name of the department?",
     },
   ]);
-  await db.createDepartment(deptTemplate);
-  console.log("Added " + deptTemplate.name + " to the database");
-  console.log("\n");
+  await db.createDepartment(YOUR_DEPT_VARIABLE);
+
+  console.log("Added " + YOUR_DEPT_VARIABLE + " to the database");
 
   loadMainPrompts();
 }
 
 async function viewRoles() {
   const roles = await db.findAllRoles();
-  let roleArrayHolder = [];
-  for (let i = 0; i < roles.length; i++) {
-    let roleArray = [
-      roles[i].id,
-      roles[i].title,
-      roles[i].salary,
-      roles[i].department_id,
-    ];
-    roleArrayHolder.push(roleArray);
-  }
-  console.log("------------------------------------------------------");
-  console.log("EMPLOYEE ROLES");
-  console.log("------------------------------------------------------");
-  console.table(
-    ["Role ID", "Title", "Salary", "Derpartment ID"],
-    roleArrayHolder
-  );
+
   console.log("\n");
+  console.table(roles);
+
   loadMainPrompts();
 }
+
 async function addRole() {
-  const allDepartments = await db.findAllDepartments();
-  const deptChoices = allDepartments.map(({ id, name }) => ({
+  const YOUR_DEPT_VAR = await db.findAllDepartments();
+
+  const YOUR_DEPT_CHOICES = YOUR_DEPT_VAR.map(({ id, name }) => ({
     name: name,
     value: id,
   }));
+
   const role = await prompt([
     {
       name: "title",
@@ -159,43 +130,27 @@ async function addRole() {
       type: "list",
       name: "department_id",
       message: "Which department does the role belong to?",
-      choices: deptChoices,
+      choices: YOUR_DEPT_CHOICES,
     },
   ]);
+
   await db.createRole(role);
+
   console.log(`Added ${role.title} to the database`);
-  console.log("\n");
+
   loadMainPrompts();
 }
+
 async function viewEmployees() {
-  const employees = await db.findAllEmployees();
-  let employeesArrayHolder = [];
-
-  for (let i = 0; i < employees.length; i++) {
-    let employeeArray = [
-      employees[i].id,
-      employees[i].first_name,
-      employees[i].last_name,
-      employees[i].role_id,
-      employees[i].manager_id,
-    ];
-    employeesArrayHolder.push(employeeArray);
-  }
-  console.log("------------------------------------------------------");
-  console.log("EMPLOYEES");
-  console.log("------------------------------------------------------");
-  console.table(
-    ["ID", "First Name", "Last Name", "Role ID", "Manager ID"],
-    employeesArrayHolder
-  );
+  const YOUR_EMP_VAR = await db.findAllEmployees();
   console.log("\n");
-
+  console.table(YOUR_EMP_VAR);
   loadMainPrompts();
 }
-async function updateEmployeeRole() {
-  const updateEmployee = await db.findAllEmployees();
 
-  const updateEmployeeChoices = updateEmployee.map(
+async function updateEmployeeRole() {
+  const YOUR_EMP_VAR = await db.findAllEmployees();
+  const YOUR_EMP_CHOICES = YOUR_EMP_VAR.map(
     ({ id, first_name, last_name }) => ({
       name: `${first_name} ${last_name}`,
       value: id,
@@ -205,12 +160,12 @@ async function updateEmployeeRole() {
     {
       type: "list",
       name: "employeeId",
-      message: "Who do you want to update?",
-      choices: updateEmployeeChoices,
+      message: "YOUR_QUESTION",
+      choices: YOUR_EMP_CHOICES,
     },
   ]);
-  const updateRole = await db.findAllRoles();
-  const updateRoleChoices = updateRole.map(({ id, title }) => ({
+  const YOUR_ROLES_VAR = await db.findAllRoles();
+  const YOUR_ROLE_CHOICES = YOUR_ROLES_VAR.map(({ id, title }) => ({
     name: title,
     value: id,
   }));
@@ -218,19 +173,20 @@ async function updateEmployeeRole() {
     {
       type: "list",
       name: "roleId",
-      message: "What role would you like to assign?",
-      choices: updateRoleChoices,
+      message: "YOUR_QUESTION_FOR_ROLE",
+      choices: YOUR_ROLE_CHOICES,
     },
   ]);
-  const employeeInt = parseInt(employeeId);
-  const roleInt = parseInt(roleId);
-  const data = await db.updateEmployeeRoleDB(employeeInt, roleInt);
+
+  await db.updateEmployeeRole(employeeId, roleId);
+
   console.log("Updated employee's role");
-  console.log("\n");
+
   loadMainPrompts();
 }
+
 async function addEmployee() {
-  const employeeTemplate = await prompt([
+  const employee = await prompt([
     {
       name: "first_name",
       message: "What is the employee's first name?",
@@ -240,70 +196,49 @@ async function addEmployee() {
       message: "What is the employee's last name?",
     },
   ]);
-  const getAllRoles = await db.findAllRoles();
-  let roleArrayHolder = [];
 
-  for (let i = 0; i < getAllRoles.length; i++) {
-    let roleArray = [
-      getAllRoles[i].id,
-      getAllRoles[i].title,
-      getAllRoles[i].salary,
-      getAllRoles[i].department_id,
-    ];
-    roleArrayHolder.push(roleArray);
-  }
-  console.log("\n");
-  console.log("------------------------------------------------------");
-  console.log("EMPLOYEE ROLES");
-  console.log("------------------------------------------------------");
-  console.table(
-    ["Role ID", "Title", "Salary", "Derpartment ID"],
-    roleArrayHolder
-  );
-  console.log("\n");
-  const roleQuery = await prompt([
+  const YOUR_ROLES_VAR = await db.findAllRoles();
+
+  const YOUR_ROLE_CHOICES = YOUR_ROLES_VAR.map(({ id, title }) => ({
+    name: title,
+    value: id,
+  }));
+
+  const role = await prompt([
     {
+      type: "list",
       name: "roleId",
-      message:
-        "What is the employee's role id? All employee roles are listed above as reference.",
+      choices: YOUR_ROLE_CHOICES,
     },
   ]);
-  const getAllManagers = await db.findManagerRole();
-  let managerArrayHolder = [];
 
-  for (let i = 0; i < getAllManagers.length; i++) {
-    let managerArray = [getAllManagers[i].manager_id, getAllManagers[i].title];
-    managerArrayHolder.push(managerArray);
-  }
+  employee.role_id = role.roleId;
 
-  console.log("\n");
-  console.log("------------------------------------------------------");
-  console.log("MANAGER IDs");
-  console.log("------------------------------------------------------");
-  console.table(["Manager ID", "Employee Role Title"], managerArrayHolder);
-  console.log("\n");
+  const YOUR_MANAGER_VAR = await db.findAllManagers();
 
-  const managerQuery = await prompt([
+  const YOUR_MANAGER_CHOICES = YOUR_MANAGER_VAR.map(
+    ({ id, first_name, last_name }) => ({
+      name: `${first_name} ${last_name}`,
+      value: id,
+    })
+  );
+
+  const manager = await prompt([
     {
+      type: "list",
       name: "managerId",
-      message:
-        "What is the id of the employee's manager? All manager ids are listed above as reference.",
+      choices: YOUR_MANAGER_CHOICES,
     },
   ]);
-  const roleID = parseInt(roleQuery.roleId);
-  const managerID = parseInt(managerQuery.managerId);
-  const employee = {
-    first_name: employeeTemplate.first_name,
-    last_name: employeeTemplate.last_name,
-    role_id: roleID,
-    manager_id: managerID,
-  };
+
+  employee.manager_id = manager.managerId;
 
   await db.createEmployee(employee);
+
   console.log(
     `Added ${employee.first_name} ${employee.last_name} to the database`
   );
-  console.log("\n");
+
   loadMainPrompts();
 }
 

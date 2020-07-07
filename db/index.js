@@ -23,7 +23,6 @@ class DB {
     return this.connection.query("SELECT * FROM role");
   }
 
-  // Create a new role
   createRole(role) {
     {
       this.connection.query(
